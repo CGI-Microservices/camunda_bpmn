@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.0.0">
+  <bpmn:process id="loan-approval-1" name="Loan Approval 1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="New Loan Request" camunda:initiator="requestor">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="firstname" label="Firstname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+              <camunda:constraint name="minlength" config="2" />
+              <camunda:constraint name="maxlength" config="25" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="lastname" label="Lastname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+              <camunda:constraint name="minlength" config="1" />
+              <camunda:constraint name="maxlength" config="25" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="amount" label="Amount" type="long">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+              <camunda:constraint name="min" config="2000" />
+              <camunda:constraint name="max" config="500000" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0el92fk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0el92fk" sourceRef="StartEvent_1" targetRef="UserTask_15a0koj" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0or1q4m" name="approved?">
+      <bpmn:incoming>SequenceFlow_0k1pq4c</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0mp7yu4</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_05onw77</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0k1pq4c" sourceRef="UserTask_15a0koj" targetRef="ExclusiveGateway_0or1q4m" />
+    <bpmn:endEvent id="EndEvent_1872v9w">
+      <bpmn:incoming>SequenceFlow_0mp7yu4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0mp7yu4" name="yes" sourceRef="ExclusiveGateway_0or1q4m" targetRef="EndEvent_1872v9w">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_05onw77" name="no" sourceRef="ExclusiveGateway_0or1q4m" targetRef="UserTask_1pubtay">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1q7t5yz" sourceRef="UserTask_1pubtay" targetRef="UserTask_15a0koj" />
+    <bpmn:userTask id="UserTask_15a0koj" name="Approve Loan Request" camunda:candidateGroups="sales">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="firstname" label="Firstname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="lastname" label="Lastname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="amount" label="Amount" type="long">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="approved" label="Do you approve this request?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0el92fk</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1q7t5yz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0k1pq4c</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_1pubtay" name="Adjust Loan Request" camunda:assignee="${requestor}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="amount" label="Amount" type="long">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+              <camunda:constraint name="min" config="2000" />
+              <camunda:constraint name="max" config="500000" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_05onw77</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1q7t5yz</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="loan-approval-1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0el92fk_di" bpmnElement="SequenceFlow_0el92fk">
+        <di:waypoint xsi:type="dc:Point" x="209" y="120" />
+        <di:waypoint xsi:type="dc:Point" x="300" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="209.5" y="95" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0or1q4m_di" bpmnElement="ExclusiveGateway_0or1q4m" isMarkerVisible="true">
+        <dc:Bounds x="502" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="482" y="69" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0k1pq4c_di" bpmnElement="SequenceFlow_0k1pq4c">
+        <di:waypoint xsi:type="dc:Point" x="400" y="120" />
+        <di:waypoint xsi:type="dc:Point" x="502" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="406" y="95" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1872v9w_di" bpmnElement="EndEvent_1872v9w">
+        <dc:Bounds x="628" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="601" y="138" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0mp7yu4_di" bpmnElement="SequenceFlow_0mp7yu4">
+        <di:waypoint xsi:type="dc:Point" x="552" y="120" />
+        <di:waypoint xsi:type="dc:Point" x="628" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="95" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_05onw77_di" bpmnElement="SequenceFlow_05onw77">
+        <di:waypoint xsi:type="dc:Point" x="527" y="145" />
+        <di:waypoint xsi:type="dc:Point" x="527" y="247" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="497" y="186" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1q7t5yz_di" bpmnElement="SequenceFlow_1q7t5yz">
+        <di:waypoint xsi:type="dc:Point" x="477" y="287" />
+        <di:waypoint xsi:type="dc:Point" x="350" y="287" />
+        <di:waypoint xsi:type="dc:Point" x="350" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="368.5" y="262" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_15a0koj_di" bpmnElement="UserTask_15a0koj">
+        <dc:Bounds x="300" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1pubtay_di" bpmnElement="UserTask_1pubtay">
+        <dc:Bounds x="477" y="247" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
